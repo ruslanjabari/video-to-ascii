@@ -6,8 +6,9 @@ from xtermcolor import colorize
 CHARS_LIGHT = [' ', ' ', '.', ':', '!', '+', '*', 'e', '$', '@', '8']
 CHARS_COLOR = ['.', '*', 'e', 's', '◍']
 CHARS_FILLED = ['░', '▒', '▓', '█']
+CHARS_DETAILED = [' ', '.', '·', ':', ';', '\'', '`', '"', '^', ',', '-', '~', '+', '<', '>', 'i', '!', 'I', '/', '\\', '|', '(', ')', '1', '{', '}', '[', ']', 'r', 'c', 'v', '?', 'L', 'T', 'J', '7', 'F', 'z', 's', 'S', 'Z', 'Y', 'x', 'X', 'V', 'K', 'n', 'N', 'k', 'K', 'H', 'A', 'G', 'E', '8', '&', '%', '@', '#']
 
-DENSITY = [CHARS_LIGHT, CHARS_COLOR, CHARS_FILLED]
+DENSITY = [CHARS_LIGHT, CHARS_COLOR, CHARS_FILLED, CHARS_DETAILED]
 
 def brightness_to_ascii(i, density=0):
     """
@@ -48,9 +49,12 @@ def increase_saturation(r, g, b):
     """
     Increase the saturation from rgb and return the new value as rgb tuple
     """
-    h, s, v = colorsys.rgb_to_hsv(r, g, b)
+    h, s, v = colorsys.rgb_to_hsv(r/255, g/255, b/255)
     s = min(s+0.3, 1.0)
-    return colorsys.hsv_to_rgb(h, s, v)
+    v = min(v+0.1, 1.0)  # Slightly increase brightness too
+    
+    r2, g2, b2 = colorsys.hsv_to_rgb(h, s, v)
+    return r2*255, g2*255, b2*255
 
 def rgb_to_brightness(r, g, b, grayscale=False):
     """

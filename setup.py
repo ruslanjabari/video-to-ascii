@@ -1,24 +1,20 @@
-import sys
 from setuptools import setup, find_packages
-from setuptools.command.install import install
-from setuptools.command.develop import develop
-from setuptools.command.egg_info import egg_info
+import sys
 
-def install_package(package):
-    import pip
-    try:
-        from pip._internal import main
-        main.main(['install', package])
-    except AttributeError:
-        from pip import __main__
-        __main__._main(['install', package])
+install_requires = [
+    'opencv-python',
+    'xtermcolor',
+    'ffmpeg-python',
+    'paramiko'
+]
 
 if "--with-audio" in sys.argv:
-    install_package('opencv-python')
-    install_package('pyaudio')
+    install_requires.extend(['pyaudio'])
     sys.argv.remove("--with-audio")
-else:
-    install_package('opencv-python')
+
+if "--with-server" in sys.argv:
+    install_requires.extend(['paramiko'])
+    sys.argv.remove("--with-server")
 
 setup(
     name="video_to_ascii",
@@ -35,17 +31,18 @@ setup(
     },
     packages=find_packages(),
     include_package_data=True,
-    install_requires=['xtermcolor', 'ffmpeg-python'],
+    install_requires=install_requires,
     classifiers=[
         "Programming Language :: Python :: 3",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    keywords='video ascii terminal opencv',
+    keywords='video ascii terminal opencv ssh',
     entry_points={
         "console_scripts": [
-            'video-to-ascii=video_to_ascii.cli:main'
+            'video-to-ascii=video_to_ascii.cli:main',
+            'video-to-ascii-server=video_to_ascii.ssh_server:main'
         ]
     }
 )
